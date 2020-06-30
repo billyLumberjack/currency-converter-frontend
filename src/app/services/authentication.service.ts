@@ -12,33 +12,32 @@ import { User } from '@app/models/user';
 })
 export class AuthenticationService {
 
-  private userSubject: BehaviorSubject<User>;
-  public user: Observable<User>;
+  private currentUserBehaviorSubject: BehaviorSubject<User>;
+  public currentUserObservable: Observable<User>;
+  private localStorageUserKey = 'user';
 
   constructor(
       private router: Router,
       private http: HttpClient
   ) {
-      this.userSubject = new BehaviorSubject<User>(JSON.parse(localStorage.getItem('user')));
-      this.user = this.userSubject.asObservable();
+      this.currentUserBehaviorSubject = new BehaviorSubject<User>(this.getUserFromLocalStorage());
+      this.currentUserObservable = this.currentUserBehaviorSubject.asObservable();
   }
 
-  public get userValue(): User {
-      return this.userSubject.value;
+  public get getCurrentUser(): User {
+      return this.currentUserBehaviorSubject.value;
   }
 
-  login(username: string, password: string): Observable<User>{
-
-      const headers = new HttpHeaders({ Authorization: 'Basic ' + btoa(username + ':' + password) });
-
-      return this.http.get<User>(`${environment.apiUrl}/basicauth`, { headers })
-          .pipe(map(user => {
-              user.authdata = window.btoa(username + ':' + password);
-              localStorage.setItem('user', JSON.stringify(user));
-              this.userSubject.next(user);
-              return user;
+  loginAndCreateUserObservable(username: string, password: string): Observable<User>{
+      const basicAuthHeaders = new HttpHeaders({ Authorization: 'Basic ' + btoa(username + ':' + password) });
+      return this.http.get<User>(environment.apiUrl + environment.authenticationEndpoint, { headers: basicAuthHeaders })
+          .pipe(map(authEndpointResponse => {
+              const toStoreUser: User = new User();
+              toStoreUser.authdata = window.btoa(username + ':' + password);
+              localStorage.setItem(this.localStorageUserKey, JSON.stringify(toStoreUser));
+              this.currentUserBehaviorSubject.next(toStoreUser);
+              return toStoreUser;
           }));
-
   }
 
   createBasicAuthToken(username: string, password: string): string{
@@ -46,8 +45,12 @@ export class AuthenticationService {
   }
 
   logout(): void {
-      localStorage.removeItem('user');
-      this.userSubject.next(null);
+      localStorage.removeItem(this.localStorageUserKey);
+      this.currentUserBehaviorSubject.next(null);
       this.router.navigate(['/login']);
+  }
+
+  private getUserFromLocalStorage(): User{
+    return JSON.parse(localStorage.getItem(this.localStorageUserKey)) as User;
   }
 }

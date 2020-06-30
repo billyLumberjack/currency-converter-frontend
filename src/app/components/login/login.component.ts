@@ -23,7 +23,7 @@ export class LoginComponent implements OnInit {
       private router: Router,
       private authenticationService: AuthenticationService
   ) {
-      if (this.authenticationService.userValue) {
+      if (this.authenticationService.getCurrentUser){
           this.router.navigate(['/']);
       }
   }
@@ -52,7 +52,7 @@ export class LoginComponent implements OnInit {
       const credentialsToUse = this.loginForm.value;
 
       this.loading = true;
-      this.authenticationService.login(credentialsToUse.username, credentialsToUse.password)
+      this.authenticationService.loginAndCreateUserObservable(credentialsToUse.username, credentialsToUse.password)
           .pipe(first())
           .subscribe(
               data => {
