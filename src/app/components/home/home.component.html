@@ -1,1 +1,9 @@
-<p>home works!</p>
+<div class="col-md-6 offset-md-3 mt-5">
+  <div class="card">
+      <h4 class="card-header">Currencies exmachina converter</h4>
+      <div class="card-body">
+        <app-amount-and-currency [currencies]="currencies" [(amount)]="amountToConvert"></app-amount-and-currency>
+        <app-amount-and-currency [currencies]="currencies" [(amount)]="convertedAmount"></app-amount-and-currency>
+      </div>
+  </div>
+</div>

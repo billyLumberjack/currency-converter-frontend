@@ -7,6 +7,12 @@ import { Component, OnInit } from '@angular/core';
 })
 export class HomeComponent implements OnInit {
 
+  currencies = ['USD' , 'CHF' , 'BTC'];
+  rate = 0.5;
+
+  amountToConvert: number = 3;
+  convertedAmount: number = this.amountToConvert * this.rate;
+
   constructor() { }
 
   ngOnInit(): void {
