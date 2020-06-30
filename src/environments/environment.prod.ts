@@ -1,3 +1,5 @@
 export const environment = {
-  production: true
+  production: true,
+  apiUrl: 'http://localhost:8090',
+  authenticationEndpoint: '/basicauth'
 };
