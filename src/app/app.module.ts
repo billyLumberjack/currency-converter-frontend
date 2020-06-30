@@ -3,18 +3,32 @@ import { NgModule } from '@angular/core';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
-import { LoginComponent } from './login/login.component';
+import { LoginComponent } from './components/login/login.component';
+
+import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
+import { ReactiveFormsModule } from '@angular/forms';
+import { BasicAuthInterceptor } from '@app/helpers/basic-auth.interceptor';
+import { ErrorInterceptor } from '@app/helpers/error-interceptor';
+import { HomeComponent } from './components/home/home.component';
+import { ValidationErrorComponent } from './components/validation-error/validation-error.component';
 
 @NgModule({
   declarations: [
     AppComponent,
-    LoginComponent
-  ],
+    LoginComponent,
+    HomeComponent,
+    ValidationErrorComponent
+    ],
   imports: [
     BrowserModule,
-    AppRoutingModule
+    AppRoutingModule,
+    ReactiveFormsModule,
+    HttpClientModule
   ],
-  providers: [],
+  providers: [
+    { provide: HTTP_INTERCEPTORS, useClass: BasicAuthInterceptor, multi: true },
+    { provide: HTTP_INTERCEPTORS, useClass: ErrorInterceptor, multi: true }
+],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
