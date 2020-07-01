@@ -11,12 +11,6 @@ export class HomeComponent implements OnInit {
 
   currencies: Array<string> = [];
 
-  sourceAmount: number;
-  destinationAmount: number;
-
-  sourceCurrency: string = 'EUR';
-  destinationCurrency: string = 'BTC';
-
   constructor(private converterApiService: ConverterApiService) { }
 
   @ViewChild('sourceAmountAndCurrency') sourceAmountAndCurrency: AmountAndCurrencyComponent;
@@ -29,18 +23,25 @@ export class HomeComponent implements OnInit {
   }
 
   sourceAmountChanged(newSourceAmount: number): void{
-    this.sourceAmount = newSourceAmount;
+
+    const amountToConvert = this.sourceAmountAndCurrency.amountForm.get('amount').value;
+    const sourceCurrency = this.sourceAmountAndCurrency.currentCurrency;
+    const destinationCurrency = this.destinationAmountAndCurrency.currentCurrency;
+
     this.converterApiService
-      .convert(this.sourceCurrency, this.destinationCurrency, this.sourceAmount)
+      .convert(sourceCurrency, destinationCurrency, amountToConvert)
       .subscribe((updatedConversion) => {
         this.destinationAmountAndCurrency.amountForm.get('amount').setValue(updatedConversion.destinationAmount);
       });
   }
 
   destinationAmountChanged(newDestinationAmount: number): void{
-    this.destinationAmount = newDestinationAmount;
+    const amountToConvert = this.destinationAmountAndCurrency.amountForm.get('amount').value;
+    const sourceCurrency = this.destinationAmountAndCurrency.currentCurrency;
+    const destinationCurrency = this.sourceAmountAndCurrency.currentCurrency;
+
     this.converterApiService
-      .convert(this.destinationCurrency, this.sourceCurrency, this.destinationAmount)
+      .convert(sourceCurrency, destinationCurrency, amountToConvert)
       .subscribe((updatedConversion) => {
         this.sourceAmountAndCurrency.amountForm.get('amount').setValue(updatedConversion.destinationAmount);
       });

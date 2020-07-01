@@ -40,6 +40,7 @@ export class AmountAndCurrencyComponent implements OnInit {
 
   setAsCurrentCurrency(currencyToSet: string): void{
     this.currentCurrency = currencyToSet;
+    this.amountChanged.emit(this.amountForm.get('amount').value);
   }
 
   emitAmountChange(event: any): void{
