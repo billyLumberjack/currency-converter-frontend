@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { ConverterApiService } from '@app/services/converter-api.service';
 
 @Component({
   selector: 'app-home',
@@ -7,25 +8,38 @@ import { Component, OnInit } from '@angular/core';
 })
 export class HomeComponent implements OnInit {
 
-  currencies = ['USD' , 'CHF' , 'BTC'];
-  rate = 0.5;
+  currencies: Array<string>;
 
-  sourceAmount: number = 3;
-  destinationAmount: number = this.sourceAmount * this.rate;
+  sourceAmount: number;
+  destinationAmount: number;
 
-  constructor() { }
+  sourceCurrency: string = 'EUR';
+  destinationCurrency: string = 'BTC';
+
+  constructor(private converterApiService: ConverterApiService) { }
 
   ngOnInit(): void {
+    this.converterApiService.getCurrencies().subscribe((currenciesFromApi) => {
+      this.currencies = currenciesFromApi;
+    });
   }
 
   sourceAmountChanged(newSourceAmount: number): void{
     this.sourceAmount = newSourceAmount;
-    this.destinationAmount = this.sourceAmount * this.rate;
+    this.converterApiService
+      .convert(this.sourceCurrency, this.destinationCurrency, this.sourceAmount)
+      .subscribe((updatedConversion) => {
+        this.destinationAmount = updatedConversion.destinationAmount;
+      });
   }
 
   destinationAmountChanged(newDestinationAmount: number): void{
     this.destinationAmount = newDestinationAmount;
-    this.sourceAmount = this.destinationAmount / this.rate;
+    this.converterApiService
+      .convert(this.destinationCurrency, this.sourceCurrency, this.destinationAmount)
+      .subscribe((updatedConversion) => {
+        this.sourceAmount = updatedConversion.destinationAmount;
+      });
   }
 
 }
