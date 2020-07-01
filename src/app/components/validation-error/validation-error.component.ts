@@ -15,7 +15,7 @@ export class ValidationErrorComponent implements OnInit {
 
   ngOnInit(): void  {}
 
-  private getErrorBessageByKey(errorKey: string){
+  private getErrorBessageByKey(errorKey: string): string{
 
     let errorMessage: string;
 

@@ -1,4 +1,4 @@
-import { Rate } from './rate'
+import { Rate } from './rate';
 
 export class CurrenciesConversion {
   usedRate: Rate;
