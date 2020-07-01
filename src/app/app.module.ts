@@ -12,6 +12,7 @@ import { ErrorInterceptor } from '@app/helpers/error-interceptor';
 import { HomeComponent } from './components/home/home.component';
 import { ValidationErrorComponent } from './components/validation-error/validation-error.component';
 import { AmountAndCurrencyComponent } from './components/amount-and-currency/amount-and-currency.component';
+import { FormControlDropdownComponent } from './components/form-control-dropdown/form-control-dropdown.component';
 
 @NgModule({
   declarations: [
@@ -19,7 +20,8 @@ import { AmountAndCurrencyComponent } from './components/amount-and-currency/amo
     LoginComponent,
     HomeComponent,
     ValidationErrorComponent,
-    AmountAndCurrencyComponent
+    AmountAndCurrencyComponent,
+    FormControlDropdownComponent
     ],
   imports: [
     BrowserModule,

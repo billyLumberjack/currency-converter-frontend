@@ -1,0 +1,10 @@
+<div class="input-group-append">
+  <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+    {{selectedOption}}
+  </button>
+  <div class="dropdown-menu">
+    <a class="dropdown-item" href="#" *ngFor="let option of options" (click)="changeSelectedOption(option)">
+      {{option}}
+    </a>
+  </div>
+</div>
