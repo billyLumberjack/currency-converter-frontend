@@ -1,13 +1,18 @@
-<div class="input-group" id="input-group-wrapper">
-  <input type="number" class="form-control" aria-label="Text input with dropdown button" [(ngModel)]="amount" (keyup)="emitAmountChange()" (mouseup)="emitAmountChange()">
-  <div class="input-group-append">
-    <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-      {{currentCurrency}}
-    </button>
-    <div class="dropdown-menu">
-      <a class="dropdown-item" href="#" *ngFor="let currency of currencies" (click)="setAsCurrentCurrency(currency)">
-        {{currency}}
-      </a>
+<div id="form-wrapper">
+  <form [formGroup]="amountForm">
+  <div class="input-group">
+      <input type="number" formControlName="amount" class="form-control" aria-label="Text input with dropdown button" [(ngModel)]="amount" (input)="emitAmountChange($event)" min="0">
+    <div class="input-group-append">
+      <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+        {{currentCurrency}}
+      </button>
+      <div class="dropdown-menu">
+        <a class="dropdown-item" href="#" *ngFor="let currency of currencies" (click)="setAsCurrentCurrency(currency)">
+          {{currency}}
+        </a>
+      </div>
     </div>
   </div>
+  <app-validation-error *ngIf="displayValidationErrorsByName('amount')" [errors]="amountForm.get('amount').errors"></app-validation-error>
+</form>
 </div>

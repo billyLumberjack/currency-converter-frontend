@@ -1,4 +1,5 @@
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
+import { FormBuilder, FormGroup, Validators, FormControl } from '@angular/forms';
 
 @Component({
   selector: 'app-amount-and-currency',
@@ -11,21 +12,44 @@ export class AmountAndCurrencyComponent implements OnInit {
   @Input() amount: number;
   @Output() amountChanged: EventEmitter<number> = new EventEmitter();
 
+  amountForm: FormGroup;
   currentCurrency: string;
 
-  constructor() {
-  }
+  constructor(
+    private formBuilder: FormBuilder
+  ) {}
 
   ngOnInit(): void {
-    this.currentCurrency = this.currencies[0];
+
+    const validateNumber = (c: FormControl) => {
+      const errorToReturn = {
+        validateNumber: {
+          valid: false
+        }
+      };
+      if (c.value == null){
+        return errorToReturn;
+      }
+    };
+
+    this.amountForm = this.formBuilder.group({
+      amount: ['', [Validators.min(0), validateNumber]]
+    });
   }
 
   setAsCurrentCurrency(currencyToSet: string): void{
     this.currentCurrency = currencyToSet;
   }
 
-  emitAmountChange(): void{
-    this.amountChanged.emit(this.amount);
+  emitAmountChange(event: any): void{
+    if (this.amountForm.valid){
+      this.amountChanged.emit(this.amount);
+    }
+  }
+
+  displayValidationErrorsByName(formControlName: string): boolean {
+    return this.amountForm.get(formControlName).invalid &&
+      (this.amountForm.get(formControlName).dirty || this.amountForm.get(formControlName).touched);
   }
 
 }
