@@ -1,5 +1,5 @@
-<div class="input-group">
-  <input type="number" class="form-control" aria-label="Text input with dropdown button" [(ngModel)]="amount" (keyup)="emitAmountChange()">
+<div class="input-group" id="input-group-wrapper">
+  <input type="number" class="form-control" aria-label="Text input with dropdown button" [(ngModel)]="amount" (keyup)="emitAmountChange()" (mouseup)="emitAmountChange()">
   <div class="input-group-append">
     <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
       {{currentCurrency}}
