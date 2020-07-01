@@ -20,19 +20,15 @@ export class ValidationErrorComponent implements OnInit {
     let errorMessage: string;
 
     switch (errorKey){
-      case 'min' : errorMessage = `` ; break;
-      case 'max' : errorMessage = `` ; break;
+      case 'min' : errorMessage = `Please insert numbers bigger than ${this.errors.min.min}` ; break;
+      case 'max' : errorMessage = `Please insert numbers lower than ${this.errors.max.max}` ; break;
       case 'required' : errorMessage = `This field is required`  ; break;
       case 'email' : errorMessage = `Please insert a valid email address` ; break;
       case 'minlength' : errorMessage = `Please insert at least ${this.errors.minlength.requiredLength} characters` ; break;
       case 'maxlength' : errorMessage = `Please insert at most ${this.errors.maxlength.requiredLength} characters` ; break;
       case 'pattern' : errorMessage = `Please respect pattern ${this.errors.pattern.requiredPattern}` ; break;
+      case 'validateNumber' : errorMessage = `Please insert a valid number` ; break;
     }
-
-    console.log("getErrorBessageByKey : " , errorMessage);
-
-
-
     return errorMessage;
   }
 
