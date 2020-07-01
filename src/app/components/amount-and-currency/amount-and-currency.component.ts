@@ -20,7 +20,31 @@ export class AmountAndCurrencyComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
+    this.amountForm = this.createFormForPositiveReal();
+    this.currentCurrency = this.currencies[0];
+  }
 
+  updateCurrentCurrency(newCurrency: string): void{
+    this.currentCurrency = newCurrency;
+    this.raiseAmountAndCurrencyChangeEvent();
+  }
+
+  emitAmountChange(event: any): void{
+    if (this.amountForm.valid){
+      this.raiseAmountAndCurrencyChangeEvent();
+    }
+  }
+
+  displayValidationErrorsByName(formControlName: string): boolean {
+    return this.amountForm.get(formControlName).invalid &&
+      (this.amountForm.get(formControlName).dirty || this.amountForm.get(formControlName).touched);
+  }
+
+  private raiseAmountAndCurrencyChangeEvent(): void{
+    this.amountChanged.emit(this.amountForm.get('amount').value);
+  }
+
+  private createFormForPositiveReal(): FormGroup{
     const validateNumber = (c: FormControl) => {
       const errorToReturn = {
         validateNumber: {
@@ -32,26 +56,9 @@ export class AmountAndCurrencyComponent implements OnInit {
       }
     };
 
-    this.amountForm = this.formBuilder.group({
+    return this.formBuilder.group({
       amount: ['', [Validators.min(0), validateNumber]]
     });
-    this.currentCurrency = this.currencies[0];
-  }
-
-  setAsCurrentCurrency(currencyToSet: string): void{
-    this.currentCurrency = currencyToSet;
-    this.amountChanged.emit(this.amountForm.get('amount').value);
-  }
-
-  emitAmountChange(event: any): void{
-    if (this.amountForm.valid){
-      this.amountChanged.emit(this.amountForm.get('amount').value);
-    }
-  }
-
-  displayValidationErrorsByName(formControlName: string): boolean {
-    return this.amountForm.get(formControlName).invalid &&
-      (this.amountForm.get(formControlName).dirty || this.amountForm.get(formControlName).touched);
   }
 
 }

@@ -7,7 +7,7 @@
         {{currentCurrency}}
       </button>
       <div class="dropdown-menu">
-        <a class="dropdown-item" href="#" *ngFor="let currency of currencies" (click)="setAsCurrentCurrency(currency)">
+        <a class="dropdown-item" href="#" *ngFor="let currency of currencies" (click)="updateCurrentCurrency(currency)">
           {{currency}}
         </a>
       </div>
