@@ -1,5 +1,6 @@
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, FormControl } from '@angular/forms';
+import { CurrenciesConversion } from '@app/models/currencies-conversion';
 
 @Component({
   selector: 'app-amount-and-currency',
@@ -9,7 +10,6 @@ import { FormBuilder, FormGroup, Validators, FormControl } from '@angular/forms'
 export class AmountAndCurrencyComponent implements OnInit {
 
   @Input() currencies: Array<string>;
-  @Input() amount: number;
   @Output() amountChanged: EventEmitter<number> = new EventEmitter();
 
   amountForm: FormGroup;
@@ -35,6 +35,7 @@ export class AmountAndCurrencyComponent implements OnInit {
     this.amountForm = this.formBuilder.group({
       amount: ['', [Validators.min(0), validateNumber]]
     });
+    this.currentCurrency = this.currencies[0];
   }
 
   setAsCurrentCurrency(currencyToSet: string): void{
@@ -43,7 +44,7 @@ export class AmountAndCurrencyComponent implements OnInit {
 
   emitAmountChange(event: any): void{
     if (this.amountForm.valid){
-      this.amountChanged.emit(this.amount);
+      this.amountChanged.emit(this.amountForm.get('amount').value);
     }
   }
 
