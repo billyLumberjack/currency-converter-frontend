@@ -1,13 +1,14 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, ViewChild, AfterViewInit } from '@angular/core';
 import { ConverterApiService } from '@app/services/converter-api.service';
 import { AmountAndCurrencyComponent } from '../amount-and-currency/amount-and-currency.component';
+import { ControlContainer, FormGroup } from '@angular/forms';
 
 @Component({
   selector: 'app-home',
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.scss']
 })
-export class HomeComponent implements OnInit {
+export class HomeComponent implements OnInit, AfterViewInit {
 
   currencies: Array<string> = [];
 
@@ -20,30 +21,35 @@ export class HomeComponent implements OnInit {
     this.converterApiService.getCurrencies().subscribe((currenciesFromApi) => {
       this.currencies = currenciesFromApi;
     });
+
   }
 
-  sourceAmountChanged(newSourceAmount: number): void{
+  ngAfterViewInit(): void {
+    this.sourceAmountAndCurrency.amountForm.get('currencyDropdown').valueChanges.subscribe((newVal) => {
+      this.handleSourceAmountOrCurrencyChange();
+    });
+    this.destinationAmountAndCurrency.amountForm.get('currencyDropdown').valueChanges.subscribe((newVal) => {
+      this.handleDestinationAmountOrCurrencyChange();
+    });
+  }
 
-    const amountToConvert = this.sourceAmountAndCurrency.amountForm.get('amount').value;
-    const sourceCurrency = this.sourceAmountAndCurrency.currentCurrency;
-    const destinationCurrency = this.destinationAmountAndCurrency.currentCurrency;
+  handleSourceAmountOrCurrencyChange(): void{
+    this.updateSourceAndDestinationForms(this.sourceAmountAndCurrency.amountForm, this.destinationAmountAndCurrency.amountForm);
+  }
+
+  handleDestinationAmountOrCurrencyChange(): void{
+    this.updateSourceAndDestinationForms(this.destinationAmountAndCurrency.amountForm, this.sourceAmountAndCurrency.amountForm);
+  }
+
+  private updateSourceAndDestinationForms(updatedFormGroup: FormGroup, toUpdateFormGroup: FormGroup): void{
+    const amountToConvert = updatedFormGroup.get('amount').value;
+    const sourceCurrency = updatedFormGroup.get('currencyDropdown').value;
+    const destinationCurrency = toUpdateFormGroup.get('currencyDropdown').value;
 
     this.converterApiService
       .convert(sourceCurrency, destinationCurrency, amountToConvert)
       .subscribe((updatedConversion) => {
-        this.destinationAmountAndCurrency.amountForm.get('amount').setValue(updatedConversion.destinationAmount);
-      });
-  }
-
-  destinationAmountChanged(newDestinationAmount: number): void{
-    const amountToConvert = this.destinationAmountAndCurrency.amountForm.get('amount').value;
-    const sourceCurrency = this.destinationAmountAndCurrency.currentCurrency;
-    const destinationCurrency = this.sourceAmountAndCurrency.currentCurrency;
-
-    this.converterApiService
-      .convert(sourceCurrency, destinationCurrency, amountToConvert)
-      .subscribe((updatedConversion) => {
-        this.sourceAmountAndCurrency.amountForm.get('amount').setValue(updatedConversion.destinationAmount);
+        toUpdateFormGroup.get('amount').setValue(updatedConversion.destinationAmount);
       });
   }
 

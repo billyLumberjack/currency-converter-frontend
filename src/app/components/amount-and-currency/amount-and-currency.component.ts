@@ -7,13 +7,13 @@ import { CurrenciesConversion } from '@app/models/currencies-conversion';
   templateUrl: './amount-and-currency.component.html',
   styleUrls: ['./amount-and-currency.component.scss']
 })
-export class AmountAndCurrencyComponent implements OnInit {
+export class AmountAndCurrencyComponent implements OnInit{
 
   @Input() currencies: Array<string>;
-  @Output() amountChanged: EventEmitter<number> = new EventEmitter();
+  @Output() amountOrCurrencyChange: EventEmitter<number> = new EventEmitter();
 
   amountForm: FormGroup;
-  currentCurrency: string;
+
 
   constructor(
     private formBuilder: FormBuilder
@@ -21,15 +21,16 @@ export class AmountAndCurrencyComponent implements OnInit {
 
   ngOnInit(): void {
     this.amountForm = this.createFormForPositiveReal();
-    this.currentCurrency = this.currencies[0];
+    this.amountForm.get('currencyDropdown').setValue(this.currencies[0]);
+    this.amountForm.get('currencyDropdown').valueChanges.subscribe((data) => {console.log(data); });
   }
 
   updateCurrentCurrency(newCurrency: string): void{
-    this.currentCurrency = newCurrency;
+    this.amountForm.get('currencyDropdown').setValue(newCurrency);
     this.raiseAmountAndCurrencyChangeEvent();
   }
 
-  emitAmountChange(event: any): void{
+  emitAmountChange(): void{
     if (this.amountForm.valid){
       this.raiseAmountAndCurrencyChangeEvent();
     }
@@ -41,7 +42,7 @@ export class AmountAndCurrencyComponent implements OnInit {
   }
 
   private raiseAmountAndCurrencyChangeEvent(): void{
-    this.amountChanged.emit(this.amountForm.get('amount').value);
+    this.amountOrCurrencyChange.emit(this.amountForm.get('amount').value);
   }
 
   private createFormForPositiveReal(): FormGroup{
@@ -57,7 +58,8 @@ export class AmountAndCurrencyComponent implements OnInit {
     };
 
     return this.formBuilder.group({
-      amount: ['', [Validators.min(0), validateNumber]]
+      amount: ['', [Validators.min(0), validateNumber]],
+      currencyDropdown: ['']
     });
   }
 

@@ -1,17 +1,8 @@
 <div id="form-wrapper">
   <form [formGroup]="amountForm">
   <div class="input-group">
-      <input type="number" formControlName="amount" class="form-control" aria-label="Text input with dropdown button" (input)="emitAmountChange($event)" min="0">
-    <div class="input-group-append">
-      <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-        {{currentCurrency}}
-      </button>
-      <div class="dropdown-menu">
-        <a class="dropdown-item" href="#" *ngFor="let currency of currencies" (click)="updateCurrentCurrency(currency)">
-          {{currency}}
-        </a>
-      </div>
-    </div>
+      <input (input)="emitAmountChange()" type="number" formControlName="amount" class="form-control" aria-label="Text input with dropdown button" min="0">
+      <app-form-control-dropdown formControlName="currencyDropdown" [options]="currencies"></app-form-control-dropdown>
   </div>
   <app-validation-error *ngIf="displayValidationErrorsByName('amount')" [errors]="amountForm.get('amount').errors"></app-validation-error>
 </form>
