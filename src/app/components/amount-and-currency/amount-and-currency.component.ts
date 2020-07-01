@@ -1,4 +1,4 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 
 @Component({
   selector: 'app-amount-and-currency',
@@ -9,6 +9,8 @@ export class AmountAndCurrencyComponent implements OnInit {
 
   @Input() currencies: Array<string>;
   @Input() amount: number;
+  @Output() amountChanged: EventEmitter<number> = new EventEmitter();
+
   currentCurrency: string;
 
   constructor() {
@@ -20,6 +22,10 @@ export class AmountAndCurrencyComponent implements OnInit {
 
   setAsCurrentCurrency(currencyToSet: string): void{
     this.currentCurrency = currencyToSet;
+  }
+
+  emitAmountChange(): void{
+    this.amountChanged.emit(this.amount);
   }
 
 }

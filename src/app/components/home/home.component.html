@@ -2,8 +2,8 @@
   <div class="card">
       <h4 class="card-header">Currencies exmachina converter</h4>
       <div class="card-body">
-        <app-amount-and-currency [currencies]="currencies" [(amount)]="amountToConvert"></app-amount-and-currency>
-        <app-amount-and-currency [currencies]="currencies" [(amount)]="convertedAmount"></app-amount-and-currency>
+        <app-amount-and-currency [currencies]="currencies" [amount]="sourceAmount" (amountChanged)="sourceAmountChanged($event)"></app-amount-and-currency>
+        <app-amount-and-currency [currencies]="currencies" [amount]="destinationAmount" (amountChanged)="destinationAmountChanged($event)"></app-amount-and-currency>
       </div>
   </div>
 </div>
