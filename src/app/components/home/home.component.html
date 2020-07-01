@@ -2,15 +2,15 @@
   <div class="card">
       <h4 class="card-header">Currencies exmachina converter</h4>
       <div class="card-body">
-        <app-amount-and-currency
+        <app-amount-and-currency *ngIf="currencies.length > 0"
           [currencies]="currencies"
-          [amount]="sourceAmount"
           (amountChanged)="sourceAmountChanged($event)"
+          #sourceAmountAndCurrency
         ></app-amount-and-currency>
-        <app-amount-and-currency
+        <app-amount-and-currency *ngIf="currencies.length > 0"
           [currencies]="currencies"
-          [amount]="destinationAmount"
           (amountChanged)="destinationAmountChanged($event)"
+          #destinationAmountAndCurrency
           ></app-amount-and-currency>
       </div>
   </div>

@@ -1,5 +1,6 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { ConverterApiService } from '@app/services/converter-api.service';
+import { AmountAndCurrencyComponent } from '../amount-and-currency/amount-and-currency.component';
 
 @Component({
   selector: 'app-home',
@@ -8,7 +9,7 @@ import { ConverterApiService } from '@app/services/converter-api.service';
 })
 export class HomeComponent implements OnInit {
 
-  currencies: Array<string>;
+  currencies: Array<string> = [];
 
   sourceAmount: number;
   destinationAmount: number;
@@ -17,6 +18,9 @@ export class HomeComponent implements OnInit {
   destinationCurrency: string = 'BTC';
 
   constructor(private converterApiService: ConverterApiService) { }
+
+  @ViewChild('sourceAmountAndCurrency') sourceAmountAndCurrency: AmountAndCurrencyComponent;
+  @ViewChild('destinationAmountAndCurrency') destinationAmountAndCurrency: AmountAndCurrencyComponent;
 
   ngOnInit(): void {
     this.converterApiService.getCurrencies().subscribe((currenciesFromApi) => {
@@ -29,7 +33,7 @@ export class HomeComponent implements OnInit {
     this.converterApiService
       .convert(this.sourceCurrency, this.destinationCurrency, this.sourceAmount)
       .subscribe((updatedConversion) => {
-        this.destinationAmount = updatedConversion.destinationAmount;
+        this.destinationAmountAndCurrency.amountForm.get('amount').setValue(updatedConversion.destinationAmount);
       });
   }
 
@@ -38,7 +42,7 @@ export class HomeComponent implements OnInit {
     this.converterApiService
       .convert(this.destinationCurrency, this.sourceCurrency, this.destinationAmount)
       .subscribe((updatedConversion) => {
-        this.sourceAmount = updatedConversion.destinationAmount;
+        this.sourceAmountAndCurrency.amountForm.get('amount').setValue(updatedConversion.destinationAmount);
       });
   }
 
