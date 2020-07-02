@@ -4,12 +4,14 @@
       <div class="card-body">
         <app-amount-and-currency
           [currencies]="currencies"
-          (amountOrCurrencyChange)="handleSourceAmountOrCurrencyChange()"
+          (amountChange)="handleSourceAmountChange($event)"
+          (currencyChange)="handleSourceCurrencyChange($event)"
           #sourceAmountAndCurrency
         ></app-amount-and-currency>
         <app-amount-and-currency
           [currencies]="currencies"
-          (amountOrCurrencyChange)="handleDestinationAmountOrCurrencyChange()"
+          (amountChange)="handleDestinationAmountChange($event)"
+          (currencyChange)="handleDestinationCurrencyChange($event)"
           #destinationAmountAndCurrency
           ></app-amount-and-currency>
       </div>

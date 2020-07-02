@@ -8,7 +8,7 @@ import { ControlContainer, FormGroup } from '@angular/forms';
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.scss']
 })
-export class HomeComponent implements OnInit, AfterViewInit {
+export class HomeComponent implements OnInit {
 
   currencies: Array<string> = [];
 
@@ -21,24 +21,31 @@ export class HomeComponent implements OnInit, AfterViewInit {
     this.converterApiService.getCurrencies().subscribe((currenciesFromApi) => {
       this.currencies = currenciesFromApi;
     });
-
   }
 
-  ngAfterViewInit(): void {
-    this.sourceAmountAndCurrency.amountForm.get('currencyDropdown').valueChanges.subscribe((newVal) => {
-      this.handleSourceAmountOrCurrencyChange();
-    });
-    this.destinationAmountAndCurrency.amountForm.get('currencyDropdown').valueChanges.subscribe((newVal) => {
-      this.handleDestinationAmountOrCurrencyChange();
-    });
+  handleSourceAmountChange(data: number): void{
+    this.updateSourceAndDestinationForms(
+      this.sourceAmountAndCurrency.amountForm,
+      this.destinationAmountAndCurrency.amountForm
+    );
   }
-
-  handleSourceAmountOrCurrencyChange(): void{
-    this.updateSourceAndDestinationForms(this.sourceAmountAndCurrency.amountForm, this.destinationAmountAndCurrency.amountForm);
+  handleSourceCurrencyChange(data: string): void{
+    this.updateSourceAndDestinationForms(
+      this.sourceAmountAndCurrency.amountForm,
+      this.destinationAmountAndCurrency.amountForm
+    );
   }
-
-  handleDestinationAmountOrCurrencyChange(): void{
-    this.updateSourceAndDestinationForms(this.destinationAmountAndCurrency.amountForm, this.sourceAmountAndCurrency.amountForm);
+  handleDestinationAmountChange(data: number): void{
+    this.updateSourceAndDestinationForms(
+      this.destinationAmountAndCurrency.amountForm,
+      this.sourceAmountAndCurrency.amountForm
+    );
+  }
+  handleDestinationCurrencyChange(data: string): void{
+    this.updateSourceAndDestinationForms(
+      this.sourceAmountAndCurrency.amountForm,
+      this.destinationAmountAndCurrency.amountForm
+    );
   }
 
   private updateSourceAndDestinationForms(updatedFormGroup: FormGroup, toUpdateFormGroup: FormGroup): void{
