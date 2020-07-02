@@ -13,7 +13,7 @@ export class AmountAndCurrencyComponent implements OnInit{
 
   @Input() currencies: Array<string>;
   @Output() amountChange: EventEmitter<number> = new EventEmitter();
-  @Output() currencyChange: EventEmitter<number> = new EventEmitter();
+  @Output() currencyChange: EventEmitter<string> = new EventEmitter();
 
   amountChangeSubject: Subject<any> = new Subject();
   currencyChangeSubject: Subject<any> = new Subject();
@@ -30,29 +30,35 @@ export class AmountAndCurrencyComponent implements OnInit{
       this.currencyChangeSubject.next(newCurrency);
     });
 
-    this.amountChangeSubject
-      .pipe(debounceTime(500))
-      .subscribe(() => {
-        if (this.amountForm.valid){
-          this.amountChange.emit(this.amountForm.get('amount').value);
-        }
-      });
+    const millisecondsDebouncingTime = 500;
+    const emitAmountChange = (newAmount: number) => {
+      if (this.amountForm.valid){
+        this.amountChange.emit(newAmount);
+      }
+    };
+    const emitCurrencyChange = (newCurrency: string) => {
+      this.currencyChange.emit(newCurrency);
+    };
 
-    this.currencyChangeSubject
-      .pipe(debounceTime(500))
-      .subscribe((data) => {
-        console.log("MANNA ", data);
-        this.currencyChange.emit(data);
-      });
+    this.executeCallbackByDebouncingTimeOnSubject(this.amountChangeSubject, millisecondsDebouncingTime, emitAmountChange);
+    this.executeCallbackByDebouncingTimeOnSubject(this.currencyChangeSubject, millisecondsDebouncingTime, emitCurrencyChange);
   }
 
-  emitAmountChange(): void{
-    this.amountChangeSubject.next();
+  handleAmountChange(): void{
+    this.amountChangeSubject.next(this.amountForm.get('amount').value);
   }
 
   displayValidationErrorsByName(formControlName: string): boolean {
     return this.amountForm.get(formControlName).invalid &&
       (this.amountForm.get(formControlName).dirty || this.amountForm.get(formControlName).touched);
+  }
+
+  private executeCallbackByDebouncingTimeOnSubject<T>(
+    subjectToSubscribeTo: Subject<T>, millisecondsDebouncingTime: number, subscriptionCallback: (data: T) => void
+    ): void{
+    subjectToSubscribeTo
+      .pipe(debounceTime(millisecondsDebouncingTime))
+      .subscribe(subscriptionCallback);
   }
 
   private createFormForPositiveReal(): FormGroup{

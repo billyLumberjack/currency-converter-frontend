@@ -1,7 +1,7 @@
 <div id="form-wrapper">
   <form [formGroup]="amountForm">
   <div class="input-group">
-      <input (input)="emitAmountChange()" type="number" formControlName="amount" class="form-control" aria-label="Text input with dropdown button" min="0">
+      <input (input)="handleAmountChange()" type="number" formControlName="amount" class="form-control" aria-label="Text input with dropdown button" min="0">
       <app-form-control-dropdown formControlName="currencyDropdown" [options]="currencies"></app-form-control-dropdown>
   </div>
   <app-validation-error *ngIf="displayValidationErrorsByName('amount')" [errors]="amountForm.get('amount').errors"></app-validation-error>
