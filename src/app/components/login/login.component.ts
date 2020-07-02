@@ -58,8 +58,8 @@ export class LoginComponent implements OnInit {
             data => {
                 this.router.navigate([this.requestedUrl]);
             },
-            error => {
-                this.error = error;
+            httpError => {
+                this.error = `Error code ${httpError.status} - '${httpError.error.message}'`;
                 this.loading = false;
             });
   }

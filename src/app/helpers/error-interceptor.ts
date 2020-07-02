@@ -12,20 +12,13 @@ export class ErrorInterceptor implements HttpInterceptor {
     intercept(request: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
         return next
           .handle(request)
-          .pipe(catchError(this.handleHttpError));
-    }
-
-    private handleHttpError(error): Observable<any> {
-      if (error.error instanceof ErrorEvent) {
-        console.error(`An error occurred: ${error.error.message}`);
-      }
-      else {
-        if (error.status === 401) {
-          this.authenticationService.logout();
-        }
-        console.error(`Backend returned code ${error.status} body was: ${error.message}`);
-      }
-
-      return throwError(error);
+          .pipe(catchError((error) => {
+            if (error.status === 401) {
+              this.authenticationService.logout();
+            }
+            console.error(`Backend returned code ${error.status} body was: ${error.error.message}`);
+            console.error(error);
+            return throwError(error);
+          }));
     }
 }

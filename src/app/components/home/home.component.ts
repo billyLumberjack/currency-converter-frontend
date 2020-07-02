@@ -84,7 +84,8 @@ export class HomeComponent implements OnInit {
   }
 
   private handleHttpErrorResponse(httpError: HttpErrorResponse): void{
-    this.errorMessage = `Http error with code : ${httpError.error.status} and error message '${httpError.error.message}'`;
+    console.log(httpError);
+    this.errorMessage = `Error code ${httpError.status} - '${httpError.error.message}'`;
     throw httpError;
   }
 
