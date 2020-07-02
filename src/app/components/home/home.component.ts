@@ -1,56 +1,63 @@
 import { Component, OnInit, ViewChild, AfterViewInit } from '@angular/core';
 import { ConverterApiService } from '@app/services/converter-api.service';
 import { AmountAndCurrencyComponent } from '../amount-and-currency/amount-and-currency.component';
-import { ControlContainer, FormGroup } from '@angular/forms';
+import { ControlContainer, FormGroup, FormControl, Validators, Form, ControlValueAccessor, AbstractControl } from '@angular/forms';
+import { AmountAndCurrency } from '@app/models/amount-and-currency';
 
 @Component({
   selector: 'app-home',
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.scss']
 })
-export class HomeComponent implements OnInit, AfterViewInit {
+export class HomeComponent implements OnInit {
 
   currencies: Array<string> = [];
 
-  constructor(private converterApiService: ConverterApiService) { }
+  currenciesConverterForm = new FormGroup({
+    sourceAmountAndCurrencyControl: new FormControl(new AmountAndCurrency()),
+    destinationAmountAndCurrencyControl: new FormControl(new AmountAndCurrency())
+ });
 
-  @ViewChild('sourceAmountAndCurrency') sourceAmountAndCurrency: AmountAndCurrencyComponent;
-  @ViewChild('destinationAmountAndCurrency') destinationAmountAndCurrency: AmountAndCurrencyComponent;
+  constructor(private converterApiService: ConverterApiService) { }
 
   ngOnInit(): void {
     this.converterApiService.getCurrencies().subscribe((currenciesFromApi) => {
       this.currencies = currenciesFromApi;
+
+      this.initEmptyControlWithName('sourceAmountAndCurrencyControl');
+      this.initEmptyControlWithName('destinationAmountAndCurrencyControl');
+
+      this.currenciesConverterForm
+        .get('sourceAmountAndCurrencyControl')
+        .valueChanges
+        .subscribe((newAmountAndCurrency: AmountAndCurrency) => {
+          this.updateControlWithName('destinationAmountAndCurrencyControl', newAmountAndCurrency);
+        });
+
+      this.currenciesConverterForm
+        .get('destinationAmountAndCurrencyControl')
+        .valueChanges
+        .subscribe((newAmountAndCurrency: AmountAndCurrency) => {
+          this.updateControlWithName('sourceAmountAndCurrencyControl', newAmountAndCurrency);
+        });
     });
-
   }
 
-  ngAfterViewInit(): void {
-    this.sourceAmountAndCurrency.amountForm.get('currencyDropdown').valueChanges.subscribe((newVal) => {
-      this.handleSourceAmountOrCurrencyChange();
-    });
-    this.destinationAmountAndCurrency.amountForm.get('currencyDropdown').valueChanges.subscribe((newVal) => {
-      this.handleDestinationAmountOrCurrencyChange();
-    });
-  }
-
-  handleSourceAmountOrCurrencyChange(): void{
-    this.updateSourceAndDestinationForms(this.sourceAmountAndCurrency.amountForm, this.destinationAmountAndCurrency.amountForm);
-  }
-
-  handleDestinationAmountOrCurrencyChange(): void{
-    this.updateSourceAndDestinationForms(this.destinationAmountAndCurrency.amountForm, this.sourceAmountAndCurrency.amountForm);
-  }
-
-  private updateSourceAndDestinationForms(updatedFormGroup: FormGroup, toUpdateFormGroup: FormGroup): void{
-    const amountToConvert = updatedFormGroup.get('amount').value;
-    const sourceCurrency = updatedFormGroup.get('currencyDropdown').value;
-    const destinationCurrency = toUpdateFormGroup.get('currencyDropdown').value;
+  private updateControlWithName(controlToUpdate: string, newAmountAndCurrency: AmountAndCurrency): void{
+    const toUpdateControl = this.currenciesConverterForm.get(controlToUpdate);
+    const toUpdateAmountAndCurrency: AmountAndCurrency = toUpdateControl.value;
 
     this.converterApiService
-      .convert(sourceCurrency, destinationCurrency, amountToConvert)
+      .convert(newAmountAndCurrency.currency, toUpdateAmountAndCurrency.currency, newAmountAndCurrency.amount)
       .subscribe((updatedConversion) => {
-        toUpdateFormGroup.get('amount').setValue(updatedConversion.destinationAmount);
+        toUpdateAmountAndCurrency.amount = updatedConversion.destinationAmount;
+        toUpdateControl.setValue(toUpdateAmountAndCurrency, {emitEvent: false});
       });
   }
 
+  initEmptyControlWithName(name: string): void{
+    const toUpdateAmountAndCurrency: AmountAndCurrency = this.currenciesConverterForm.get(name).value;
+    toUpdateAmountAndCurrency.currency = this.currencies[0];
+    this.currenciesConverterForm.get(name).setValue(toUpdateAmountAndCurrency);
+  }
 }

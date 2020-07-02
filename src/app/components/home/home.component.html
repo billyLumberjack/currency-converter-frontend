@@ -2,16 +2,16 @@
   <div class="card">
       <h4 class="card-header">Currencies exmachina converter</h4>
       <div class="card-body">
+        <form [formGroup]="currenciesConverterForm">
         <app-amount-and-currency
           [currencies]="currencies"
-          (amountOrCurrencyChange)="handleSourceAmountOrCurrencyChange()"
-          #sourceAmountAndCurrency
+          formControlName="sourceAmountAndCurrencyControl"
         ></app-amount-and-currency>
         <app-amount-and-currency
           [currencies]="currencies"
-          (amountOrCurrencyChange)="handleDestinationAmountOrCurrencyChange()"
-          #destinationAmountAndCurrency
+          formControlName="destinationAmountAndCurrencyControl"
           ></app-amount-and-currency>
+        </form>
       </div>
   </div>
 </div>

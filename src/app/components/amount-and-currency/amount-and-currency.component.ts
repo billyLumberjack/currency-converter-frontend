@@ -1,48 +1,62 @@
-import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
-import { FormBuilder, FormGroup, Validators, FormControl } from '@angular/forms';
-import { CurrenciesConversion } from '@app/models/currencies-conversion';
+import { Component, OnInit, Input, forwardRef } from '@angular/core';
+import { FormBuilder, FormGroup, Validators, FormControl, NG_VALUE_ACCESSOR, ControlValueAccessor } from '@angular/forms';
+import { AmountAndCurrency } from '@app/models/amount-and-currency';
 
 @Component({
   selector: 'app-amount-and-currency',
   templateUrl: './amount-and-currency.component.html',
-  styleUrls: ['./amount-and-currency.component.scss']
+  styleUrls: ['./amount-and-currency.component.scss'],
+  providers: [{
+    provide: NG_VALUE_ACCESSOR,
+    useExisting: forwardRef(() => AmountAndCurrencyComponent),
+    multi: true,
+ }]
 })
-export class AmountAndCurrencyComponent implements OnInit{
+export class AmountAndCurrencyComponent implements OnInit, ControlValueAccessor{
 
   @Input() currencies: Array<string>;
-  @Output() amountOrCurrencyChange: EventEmitter<number> = new EventEmitter();
 
   amountForm: FormGroup;
+  currentAmountAndCurrency: AmountAndCurrency;
 
+  constructor(private formBuilder: FormBuilder) {}
 
-  constructor(
-    private formBuilder: FormBuilder
-  ) {}
+  onChange: (_: AmountAndCurrency) => {};
+
+  writeValue(newAmountAndCurrency: AmountAndCurrency): void {
+    this.currentAmountAndCurrency = newAmountAndCurrency;
+    this.amountForm.get('amountInput').setValue(this.currentAmountAndCurrency.amount, {emitEvent: false});
+    this.amountForm.get('currencyDropdown').setValue(this.currentAmountAndCurrency.currency, {emitEvent: false});
+  }
+
+  registerOnChange(fn: (_: any) => {}): void {
+    this.onChange = fn;
+ }
+
+  registerOnTouched(fn: any): void {}
+
+  handleAmountChange(newAmount: number): void{
+      this.currentAmountAndCurrency.amount = newAmount;
+      if (this.amountForm.valid){
+        this.onChange(this.currentAmountAndCurrency);
+      }
+  }
+
+  handleCurrencyChange(newCurrency: string): void{
+    this.currentAmountAndCurrency.currency = newCurrency;
+    if (this.amountForm.valid){
+      this.onChange(this.currentAmountAndCurrency);
+    }
+  }
 
   ngOnInit(): void {
     this.amountForm = this.createFormForPositiveReal();
-    this.amountForm.get('currencyDropdown').setValue(this.currencies[0]);
-    this.amountForm.get('currencyDropdown').valueChanges.subscribe((data) => {console.log(data); });
-  }
-
-  updateCurrentCurrency(newCurrency: string): void{
-    this.amountForm.get('currencyDropdown').setValue(newCurrency);
-    this.raiseAmountAndCurrencyChangeEvent();
-  }
-
-  emitAmountChange(): void{
-    if (this.amountForm.valid){
-      this.raiseAmountAndCurrencyChangeEvent();
-    }
+    this.amountForm.get('currencyDropdown').valueChanges.subscribe((data) => {this.handleCurrencyChange(data); });
   }
 
   displayValidationErrorsByName(formControlName: string): boolean {
     return this.amountForm.get(formControlName).invalid &&
       (this.amountForm.get(formControlName).dirty || this.amountForm.get(formControlName).touched);
-  }
-
-  private raiseAmountAndCurrencyChangeEvent(): void{
-    this.amountOrCurrencyChange.emit(this.amountForm.get('amount').value);
   }
 
   private createFormForPositiveReal(): FormGroup{
@@ -58,8 +72,8 @@ export class AmountAndCurrencyComponent implements OnInit{
     };
 
     return this.formBuilder.group({
-      amount: ['', [Validators.min(0), validateNumber]],
-      currencyDropdown: ['']
+      amountInput: ['', [Validators.min(0), validateNumber]],
+      currencyDropdown: ['', Validators.required]
     });
   }
 
