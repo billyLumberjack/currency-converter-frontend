@@ -1,6 +1,8 @@
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, FormControl } from '@angular/forms';
 import { CurrenciesConversion } from '@app/models/currencies-conversion';
+import { Subject } from 'rxjs';
+import { debounceTime } from 'rxjs/operators';
 
 @Component({
   selector: 'app-amount-and-currency',
@@ -13,6 +15,9 @@ export class AmountAndCurrencyComponent implements OnInit{
   @Output() amountChange: EventEmitter<number> = new EventEmitter();
   @Output() currencyChange: EventEmitter<number> = new EventEmitter();
 
+  amountChangeSubject: Subject<any> = new Subject();
+  currencyChangeSubject: Subject<any> = new Subject();
+
   amountForm: FormGroup;
 
   constructor(
@@ -22,14 +27,27 @@ export class AmountAndCurrencyComponent implements OnInit{
   ngOnInit(): void {
     this.amountForm = this.createFormForPositiveReal();
     this.amountForm.get('currencyDropdown').valueChanges.subscribe((newCurrency) => {
-      this.currencyChange.emit(newCurrency);
+      this.currencyChangeSubject.next(newCurrency);
     });
+
+    this.amountChangeSubject
+      .pipe(debounceTime(500))
+      .subscribe(() => {
+        if (this.amountForm.valid){
+          this.amountChange.emit(this.amountForm.get('amount').value);
+        }
+      });
+
+    this.currencyChangeSubject
+      .pipe(debounceTime(500))
+      .subscribe((data) => {
+        console.log("MANNA ", data);
+        this.currencyChange.emit(data);
+      });
   }
 
   emitAmountChange(): void{
-    if (this.amountForm.valid){
-      this.amountChange.emit(this.amountForm.get('amount').value);
-    }
+    this.amountChangeSubject.next();
   }
 
   displayValidationErrorsByName(formControlName: string): boolean {
