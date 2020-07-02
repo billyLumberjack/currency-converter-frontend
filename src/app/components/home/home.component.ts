@@ -27,19 +27,17 @@ export class HomeComponent implements OnInit {
       this.initEmptyControlWithName('sourceAmountAndCurrencyControl');
       this.initEmptyControlWithName('destinationAmountAndCurrencyControl');
 
-      this.currenciesConverterForm
-        .get('sourceAmountAndCurrencyControl')
-        .valueChanges
-        .subscribe((newAmountAndCurrency: AmountAndCurrency) => {
-          this.updateControlWithName('destinationAmountAndCurrencyControl', newAmountAndCurrency);
-        });
+      this.subsToControlChangeAndExecute('sourceAmountAndCurrencyControl', 'destinationAmountAndCurrencyControl');
+      this.subsToControlChangeAndExecute('destinationAmountAndCurrencyControl', 'sourceAmountAndCurrencyControl');
+    });
+  }
 
-      this.currenciesConverterForm
-        .get('destinationAmountAndCurrencyControl')
-        .valueChanges
-        .subscribe((newAmountAndCurrency: AmountAndCurrency) => {
-          this.updateControlWithName('sourceAmountAndCurrencyControl', newAmountAndCurrency);
-        });
+  private subsToControlChangeAndExecute(controlToSubscribeName: string, controlToUpdateName: string): void{
+    this.currenciesConverterForm
+    .get(controlToSubscribeName)
+    .valueChanges
+    .subscribe((newAmountAndCurrency: AmountAndCurrency) => {
+      this.updateControlWithName(controlToUpdateName, newAmountAndCurrency);
     });
   }
 
