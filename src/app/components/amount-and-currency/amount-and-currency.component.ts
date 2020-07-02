@@ -15,14 +15,12 @@ export class AmountAndCurrencyComponent implements OnInit{
 
   amountForm: FormGroup;
 
-
   constructor(
     private formBuilder: FormBuilder
   ) {}
 
   ngOnInit(): void {
     this.amountForm = this.createFormForPositiveReal();
-    this.amountForm.get('currencyDropdown').setValue(this.currencies[0]);
     this.amountForm.get('currencyDropdown').valueChanges.subscribe((newCurrency) => {
       this.currencyChange.emit(newCurrency);
     });

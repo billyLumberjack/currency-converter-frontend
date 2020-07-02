@@ -10,7 +10,7 @@ import { ControlContainer, FormGroup } from '@angular/forms';
 })
 export class HomeComponent implements OnInit {
 
-  currencies: Array<string> = [];
+  currencies: Array<string>;
 
   constructor(private converterApiService: ConverterApiService) { }
 
@@ -20,6 +20,14 @@ export class HomeComponent implements OnInit {
   ngOnInit(): void {
     this.converterApiService.getCurrencies().subscribe((currenciesFromApi) => {
       this.currencies = currenciesFromApi;
+      this.setDropdwonValueByFormAndValue(
+        this.sourceAmountAndCurrency.amountForm,
+        this.currencies[0]
+      );
+      this.setDropdwonValueByFormAndValue(
+        this.destinationAmountAndCurrency.amountForm,
+        this.currencies[0]
+      );
     });
   }
 
@@ -46,6 +54,10 @@ export class HomeComponent implements OnInit {
       this.sourceAmountAndCurrency.amountForm,
       this.destinationAmountAndCurrency.amountForm
     );
+  }
+
+  private setDropdwonValueByFormAndValue(formToUpdate: FormGroup, newValue: string): void{
+    formToUpdate.get('currencyDropdown').setValue(newValue, {emitEvent: false});
   }
 
   private updateSourceAndDestinationForms(updatedFormGroup: FormGroup, toUpdateFormGroup: FormGroup): void{

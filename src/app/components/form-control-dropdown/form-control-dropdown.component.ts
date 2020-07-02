@@ -21,7 +21,6 @@ export class FormControlDropdownComponent implements OnInit, ControlValueAccesso
   constructor() { }
 
   ngOnInit(): void {
-    this.selectedOption = this.options[0];
   }
 
   writeValue(value: string): void {
