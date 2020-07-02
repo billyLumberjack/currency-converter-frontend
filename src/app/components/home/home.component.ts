@@ -2,6 +2,9 @@ import { Component, OnInit, ViewChild, AfterViewInit } from '@angular/core';
 import { ConverterApiService } from '@app/services/converter-api.service';
 import { AmountAndCurrencyComponent } from '../amount-and-currency/amount-and-currency.component';
 import { ControlContainer, FormGroup } from '@angular/forms';
+import { throwError, Observable } from 'rxjs';
+import { HttpErrorResponse } from '@angular/common/http';
+import { catchError, first, map } from 'rxjs/operators';
 
 @Component({
   selector: 'app-home',
@@ -17,18 +20,23 @@ export class HomeComponent implements OnInit {
   @ViewChild('sourceAmountAndCurrency') sourceAmountAndCurrency: AmountAndCurrencyComponent;
   @ViewChild('destinationAmountAndCurrency') destinationAmountAndCurrency: AmountAndCurrencyComponent;
 
+  errorMessage: string;
+
   ngOnInit(): void {
-    this.converterApiService.getCurrencies().subscribe((currenciesFromApi) => {
-      this.currencies = currenciesFromApi;
-      this.setDropdwonValueByFormAndValue(
-        this.sourceAmountAndCurrency.amountForm,
-        this.currencies[0]
+    this.converterApiService.getCurrencies()
+      .subscribe((currenciesFromApi) => {
+        this.currencies = currenciesFromApi;
+        this.setDropdwonValueByFormAndValue(
+          this.sourceAmountAndCurrency.amountForm,
+          this.currencies[0]
+        );
+        this.setDropdwonValueByFormAndValue(
+          this.destinationAmountAndCurrency.amountForm,
+          this.currencies[0]
+        );
+      },
+      (httpError) => this.handleHttpErrorResponse(httpError)
       );
-      this.setDropdwonValueByFormAndValue(
-        this.destinationAmountAndCurrency.amountForm,
-        this.currencies[0]
-      );
-    });
   }
 
   handleSourceAmountChange(data: number): void{
@@ -67,9 +75,17 @@ export class HomeComponent implements OnInit {
 
     this.converterApiService
       .convert(sourceCurrency, destinationCurrency, amountToConvert)
-      .subscribe((updatedConversion) => {
-        toUpdateFormGroup.get('amount').setValue(updatedConversion.destinationAmount);
-      });
+      .subscribe(
+        (updatedConversion) => {
+          toUpdateFormGroup.get('amount').setValue(updatedConversion.destinationAmount);
+        },
+        (httpError) => this.handleHttpErrorResponse(httpError)
+      );
+  }
+
+  private handleHttpErrorResponse(httpError: HttpErrorResponse): void{
+    this.errorMessage = `Http error with code : ${httpError.error.status} and error message '${httpError.error.message}'`;
+    throw httpError;
   }
 
 }

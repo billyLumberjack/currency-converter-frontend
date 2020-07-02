@@ -43,24 +43,24 @@ export class LoginComponent implements OnInit {
   }
 
   validateFormAndAuthenticate(): void{
-      this.submitted = true;
+    this.submitted = true;
 
-      if (this.loginForm.invalid) {
-          return;
-      }
+    if (this.loginForm.invalid) {
+        return;
+    }
 
-      const credentialsToUse = this.loginForm.value;
+    const credentialsToUse = this.loginForm.value;
 
-      this.loading = true;
-      this.authenticationService.loginAndCreateUserObservable(credentialsToUse.username, credentialsToUse.password)
-          .pipe(first())
-          .subscribe(
-              data => {
-                  this.router.navigate([this.requestedUrl]);
-              },
-              error => {
-                  this.error = error;
-                  this.loading = false;
-              });
+    this.loading = true;
+    this.authenticationService.loginAndCreateUserObservable(credentialsToUse.username, credentialsToUse.password)
+        .pipe(first())
+        .subscribe(
+            data => {
+                this.router.navigate([this.requestedUrl]);
+            },
+            error => {
+                this.error = error;
+                this.loading = false;
+            });
   }
 }
