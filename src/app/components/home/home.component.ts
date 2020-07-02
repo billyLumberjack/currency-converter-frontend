@@ -27,21 +27,21 @@ export class HomeComponent implements OnInit {
       this.initEmptyControlWithName('sourceAmountAndCurrencyControl');
       this.initEmptyControlWithName('destinationAmountAndCurrencyControl');
 
-      this.subsToControlChangeAndExecute('sourceAmountAndCurrencyControl', 'destinationAmountAndCurrencyControl');
-      this.subsToControlChangeAndExecute('destinationAmountAndCurrencyControl', 'sourceAmountAndCurrencyControl');
+      this.monitorChangesAndUpdateControlsWithNames('sourceAmountAndCurrencyControl', 'destinationAmountAndCurrencyControl');
+      this.monitorChangesAndUpdateControlsWithNames('destinationAmountAndCurrencyControl', 'sourceAmountAndCurrencyControl');
     });
   }
 
-  private subsToControlChangeAndExecute(controlToSubscribeName: string, controlToUpdateName: string): void{
+  private monitorChangesAndUpdateControlsWithNames(controlToSubscribeName: string, controlToUpdateName: string): void{
     this.currenciesConverterForm
     .get(controlToSubscribeName)
     .valueChanges
     .subscribe((newAmountAndCurrency: AmountAndCurrency) => {
-      this.updateControlWithName(controlToUpdateName, newAmountAndCurrency);
+      this.updateControlWithNameAndValue(controlToUpdateName, newAmountAndCurrency);
     });
   }
 
-  private updateControlWithName(controlToUpdate: string, newAmountAndCurrency: AmountAndCurrency): void{
+  private updateControlWithNameAndValue(controlToUpdate: string, newAmountAndCurrency: AmountAndCurrency): void{
     const toUpdateControl = this.currenciesConverterForm.get(controlToUpdate);
     const toUpdateAmountAndCurrency: AmountAndCurrency = toUpdateControl.value;
 
@@ -53,7 +53,7 @@ export class HomeComponent implements OnInit {
       });
   }
 
-  initEmptyControlWithName(name: string): void{
+  private initEmptyControlWithName(name: string): void{
     const toUpdateAmountAndCurrency: AmountAndCurrency = this.currenciesConverterForm.get(name).value;
     toUpdateAmountAndCurrency.currency = this.currencies[0];
     this.currenciesConverterForm.get(name).setValue(toUpdateAmountAndCurrency);
