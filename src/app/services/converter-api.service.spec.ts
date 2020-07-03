@@ -1,16 +1,30 @@
-import { TestBed } from '@angular/core/testing';
+import { TestBed, inject } from '@angular/core/testing';
 
 import { ConverterApiService } from './converter-api.service';
+import { HttpClient } from '@angular/common/http';
+import { Observable, defer } from 'rxjs';
+import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 
-describe('ConverterApiService', () => {
-  let service: ConverterApiService;
+
+
+fdescribe('ConverterApiService', () => {
 
   beforeEach(() => {
-    TestBed.configureTestingModule({});
-    service = TestBed.inject(ConverterApiService);
+    TestBed.configureTestingModule({
+      imports: [HttpClientTestingModule],
+      providers: [ConverterApiService]
+    });
   });
 
-  it('should be created', () => {
-    expect(service).toBeTruthy();
+  fit('should be created', inject([ConverterApiService], (converterApiService: ConverterApiService) => {
+    expect(converterApiService).toBeTruthy();
+  }));
+
+  fit('should return array of strings', () => {
+    const converterApiService = TestBed.inject(ConverterApiService);
+
+    converterApiService.getCurrencies().subscribe((data) => {
+
+    });
   });
 });
